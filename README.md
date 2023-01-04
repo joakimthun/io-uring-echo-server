@@ -22,3 +22,8 @@ make
 jthun@jthun:~$ echo "Hello, World!" | nc localhost 6379
 Hello, World!
 ```
+
+# io-uring resources
+* https://kernel.dk/io_uring.pdf
+* https://unixism.net/loti/what_is_io_uring.html
+* https://github.com/axboe/liburing
