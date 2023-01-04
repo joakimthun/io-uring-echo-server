@@ -9,6 +9,8 @@ Built and tested with clang 14 and g++ 11.3.0.
 
 # Build and run
 
+Install https://github.com/axboe/liburing.
+
 ```
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/clang++
