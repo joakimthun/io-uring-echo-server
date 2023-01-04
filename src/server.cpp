@@ -65,6 +65,8 @@ static void sig_handler(int s) {
     running = false;
 }
 
+constexpr int PORT = 6379;
+
 int main() {
     utsname u{};
     uname(&u);
@@ -84,7 +86,8 @@ int main() {
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
-    UringEchoServer server(6379);
+    UringEchoServer server(PORT);
+    printf("Starting server on port: %d\n", PORT);
     server.run_event_loop(running);
     return 0;
 }
