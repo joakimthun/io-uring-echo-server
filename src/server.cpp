@@ -60,6 +60,7 @@ static const char* IO_URING_OP_NAMES[] = {
 
 bool running = true;
 
+static void no_op_sig_handler(int) {}
 static void sig_handler(int s) {
     printf("Signal %d received. Shutting down...\n", s);
     running = false;
@@ -83,6 +84,7 @@ int main() {
 
     UNUSED(IO_URING_OP_NAMES);
 
+    signal(SIGPIPE, no_op_sig_handler);
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 

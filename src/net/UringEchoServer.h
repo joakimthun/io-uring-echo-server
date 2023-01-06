@@ -10,7 +10,7 @@ class UringEchoServer {
     // The maximum number of entries to retrieve in a single loop iteration
     static constexpr unsigned CQE_BATCH_SIZE = 32;
     // The size of the SQ. By default, the CQ ring will be twice this number
-    static constexpr unsigned NUM_SUBMISSION_QUEUE_ENTRIES = 64;
+    static constexpr unsigned NUM_SUBMISSION_QUEUE_ENTRIES = 128;
     // The size of each pre-allocated IO buffer. Power-of-2.
     static constexpr unsigned IO_BUFFER_SIZE = 512;
     // The number of IO buffers to pre-allocate
