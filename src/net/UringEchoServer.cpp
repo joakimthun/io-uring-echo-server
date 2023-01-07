@@ -9,21 +9,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#ifdef LOGGING_ENABLED
-#include <cstdio>
-
-#define LOG_INFO(...) fprintf(stdout, __VA_ARGS__)
-#define LOG_ERROR(...) fprintf(stderr, __VA_ARGS__)
-
-#else
-#define LOG_INFO(...)                                                                                        \
-    do {                                                                                                     \
-    } while (0)
-#define LOG_ERROR(...)                                                                                       \
-    do {                                                                                                     \
-    } while (0)
-#endif
-
 // Process exit code on non recoverable errors
 constexpr int EXIT_ERROR = 1;
 // Error code returned by Linux APIs
@@ -306,7 +291,8 @@ void UringEchoServer::handle_read(io_uring_cqe* cqe, int client_fd) {
     const auto result = cqe->res;
     bool closed = false;
 
-    if (result == 0 || result == -EBADF || result == -ECONNRESET) { // EOF, Broken pipe or Connection reset by peer
+    if (result == 0 || result == -EBADF ||
+        result == -ECONNRESET) { // EOF, Broken pipe or Connection reset by peer
         add_close(client_fd);
         closed = true;
     } else if (result < 0) { // Error

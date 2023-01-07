@@ -3,8 +3,7 @@
 #include <sys/utsname.h>
 
 #include "net/UringEchoServer.h"
-
-#define UNUSED(x) (void)(x)
+#include "util/util.h"
 
 static const char* IO_URING_OP_NAMES[] = {
     "IORING_OP_NOP",
@@ -89,7 +88,7 @@ int main() {
     signal(SIGTERM, sig_handler);
 
     UringEchoServer server(PORT);
-    printf("Starting server on port: %d\n", PORT);
+    printf("Starting uring server on port: %d\n", PORT);
     server.run_event_loop(running);
     return 0;
 }

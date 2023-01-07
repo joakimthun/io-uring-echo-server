@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util/util.h"
+
 #include <liburing.h>
 #include <netinet/in.h>
 
@@ -15,6 +17,9 @@ class UringEchoServer {
     static constexpr unsigned IO_BUFFER_SIZE = 1024;
     // The number of IO buffers to pre-allocate
     static constexpr uint16_t NUM_IO_BUFFERS = 2048;
+
+    static_assert(is_power_of_two<IO_BUFFER_SIZE>());
+    static_assert(is_power_of_two<NUM_IO_BUFFERS>());
 
     explicit UringEchoServer(int port);
     ~UringEchoServer();
