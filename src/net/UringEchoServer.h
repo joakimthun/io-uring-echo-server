@@ -8,13 +8,13 @@ class UringEchoServer {
     // Min number of entries to wait for in the event loop
     static constexpr unsigned NUM_WAIT_ENTRIES = 1;
     // The maximum number of entries to retrieve in a single loop iteration
-    static constexpr unsigned CQE_BATCH_SIZE = 32;
+    static constexpr unsigned CQE_BATCH_SIZE = 128;
     // The size of the SQ. By default, the CQ ring will be twice this number
-    static constexpr unsigned NUM_SUBMISSION_QUEUE_ENTRIES = 128;
+    static constexpr unsigned NUM_SUBMISSION_QUEUE_ENTRIES = 256;
     // The size of each pre-allocated IO buffer. Power-of-2.
-    static constexpr unsigned IO_BUFFER_SIZE = 512;
+    static constexpr unsigned IO_BUFFER_SIZE = 1024;
     // The number of IO buffers to pre-allocate
-    static constexpr uint16_t NUM_IO_BUFFERS = NUM_SUBMISSION_QUEUE_ENTRIES * 2;
+    static constexpr uint16_t NUM_IO_BUFFERS = 2048;
 
     explicit UringEchoServer(int port);
     ~UringEchoServer();
@@ -24,7 +24,7 @@ class UringEchoServer {
   private:
     void handle_accept(io_uring_cqe* cqe);
     void handle_read(io_uring_cqe* cqe, int client_fd);
-    void handle_write(io_uring_cqe* cqe, uint16_t buffer_idx);
+    void handle_write(io_uring_cqe* cqe, int client_fd, uint16_t buffer_idx);
 
     io_uring_sqe* get_sqe();
     void add_accept();

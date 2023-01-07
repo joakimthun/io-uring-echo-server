@@ -2,12 +2,12 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <unistd.h>
 
 // Linux
 #include <error.h>
 #include <sys/mman.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #ifdef LOGGING_ENABLED
 #include <cstdio>
@@ -274,7 +274,7 @@ void UringEchoServer::run_event_loop(bool& loop) {
                 handle_read(cqe, ctx.client_fd);
                 break;
             case ContextType::Write:
-                handle_write(cqe, ctx.buffer_idx);
+                handle_write(cqe, ctx.client_fd, ctx.buffer_idx);
                 break;
             default:
                 error(EXIT_ERROR, 0, "context type not handled: %d", static_cast<int>(ctx.type));
@@ -306,12 +306,11 @@ void UringEchoServer::handle_read(io_uring_cqe* cqe, int client_fd) {
     const auto result = cqe->res;
     bool closed = false;
 
-    if (result == 0) { // EOF
+    if (result == 0 || result == -EBADF || result == -ECONNRESET) { // EOF, Broken pipe or Connection reset by peer
         add_close(client_fd);
         closed = true;
     } else if (result < 0) { // Error
         LOG_ERROR("Recv error: %d\n", result);
-
         if (result == -ENOBUFS) {
             // No buffer to read data into...
         } else {
@@ -341,9 +340,14 @@ void UringEchoServer::handle_read(io_uring_cqe* cqe, int client_fd) {
     }
 }
 
-void UringEchoServer::handle_write(io_uring_cqe* cqe, uint16_t buffer_idx) {
+void UringEchoServer::handle_write(io_uring_cqe* cqe, int client_fd, uint16_t buffer_idx) {
     const auto result = cqe->res;
-    if (result < 0) { // Write error
+    if (result == -EPIPE || result == -EBADF || result == -ECONNRESET) {
+        // EPIPE - Broken pipe
+        // ECONNRESET - Connection reset by peer
+        // EBADF - Fd has been closed
+        add_close(client_fd);
+    } else if (result < 0) {
         LOG_ERROR("Write error: %d\n", result);
     }
 
