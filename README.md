@@ -39,9 +39,11 @@ Intel i7-12700) i.e. loopback. They do **not** reflect real world performance.
 
 ### Client(s)
 
-https://github.com/satori-com/tcpkali
+https://github.com/haraldh/rust_echo_bench
 
-Example command: ```tcpkali -f 1024.in -c 256 --duration 60 localhost:6379```
+Example command: ```cargo run --release -- --address "localhost:6379" --number 1 --duration 60 --length 1024```
+
+This is the same tool that is used by: https://github.com/frevib/io_uring-echo-server
 
 ### Server
 
