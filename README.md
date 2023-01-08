@@ -32,7 +32,8 @@ Built and tested with clang 14 and g++ 11.3.0.
 
 # io_uring vs epoll benchmark results
 
-**NOTE:** These benchmarks are not very scientific. E.g. they are run with the clients and server on the same machine (Intel i7-12700) i.e. loopback. They do **not** reflect real world performance.
+**NOTE:** These benchmarks are not very scientific. E.g. they are run with the clients and server on the same machine (
+Intel i7-12700) i.e. loopback. They do **not** reflect real world performance.
 
 ## Set-up
 
@@ -51,14 +52,6 @@ Built with the build command below. Servers are started like this:
 ``` taskset -c 0 ./epoll_echo_server```
 
 ## Results
-
-The numbers in the table is the packet rate/PPS calculated by tcpkali. All benchmarks are run with a 1024 byte
-payload.
-
-|  Server  |  Num connections:  |     1     |    128    |    256    |
-|:--------:|:-----------------:|:---------:|:---------:|:---------:|
-| io_uring | 1024 byte payload | 2 128 485 | 1 676 239 | 1 445 032 |
-|  epoll   | 1024 byte payload | 1 316 781 | 1 313 683 | 1 321 599 |
 
 **TODO:** Run benchmarks in a more realistic set-up.
 
