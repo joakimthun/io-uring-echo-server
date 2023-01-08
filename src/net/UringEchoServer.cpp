@@ -66,10 +66,14 @@ static int create_listening_socket(int port) {
 }
 
 static void init_io_uring(io_uring* ring, unsigned num_submission_queue_entries) {
-    const unsigned flags = 0;
-    // On success, io_uring_queue_init(3) returns 0 and 'ring' will point to the shared memory containing the
-    // io_uring queues. On failure -errno is returned.
-    const int init_result = io_uring_queue_init(num_submission_queue_entries, ring, flags);
+    io_uring_params params;
+    memset(&params, 0, sizeof(params));
+
+    // params.flags |= IORING_SETUP_SQPOLL;
+
+    //  On success, io_uring_queue_init(3) returns 0 and 'ring' will point to the shared memory containing the
+    //  io_uring queues. On failure -errno is returned.
+    const int init_result = io_uring_queue_init_params(num_submission_queue_entries, ring, &params);
     if (init_result != 0) {
         error(EXIT_ERROR, init_result, "io_uring_queue_init");
     }
@@ -83,8 +87,8 @@ static constexpr uint8_t* get_buffer_base_addr(void* ring_addr) {
     return (uint8_t*)ring_addr + (sizeof(io_uring_buf) * UringEchoServer::NUM_IO_BUFFERS);
 }
 
-static uint8_t* get_buffer_addr(uint8_t* base_addr, uint16_t idx) {
-    return base_addr + (idx * UringEchoServer::IO_BUFFER_SIZE);
+static constexpr uint8_t* get_buffer_addr(uint8_t* base_addr, uint16_t idx) {
+    return base_addr + (idx << log2<UringEchoServer::IO_BUFFER_SIZE>());
 }
 
 static void recycle_buffer(io_uring_buf_ring* buf_ring, uint8_t* buf_base_addr, uint16_t idx) {
