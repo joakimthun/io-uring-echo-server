@@ -52,7 +52,7 @@ Built with the build command below. Servers are started like this:
 
 ``` taskset -c 0 ./epoll_echo_server```
 
-Server commit used for the benchmarks: ```3dfd157f6dbfa84faf5bb718cbce44d08185d295``` (for config values)
+Server commit used for the benchmarks: ```b1acab8d13cd2ba58a8caf28618f87e44322a857``` (for config values)
 
 ## Results
 
