@@ -21,14 +21,13 @@ Built and tested with clang 14 and g++ 11.3.0.
 # epoll echo server
 
 * ```src/net/EpollEchoServer.h```
-* The benchmarks below are compiled with ```INLINE_EPOLL_WRITE``` defined i.e. no dynamic buffer management (using a per
-  connection tx queue and a list of pre-allocated IO buffers) and less calls to ```epoll_ctl```. For an echo server this
-  kinda works, but we risk dropping repsonses on ```EAGAIN```/```EWOULDBLOCK```, partial scoket writes or other errors
-  i.e. not really something that can be done in a real application. TLDR: With ```INLINE_EPOLL_WRITE``` we try to
+* The benchmarks below are compiled with ```INLINE_EPOLL_WRITE``` defined i.e. no dynamic buffer management (without ```INLINE_EPOLL_WRITE``` the server is using a per connection tx buffer queue and a global list of pre-allocated IO buffers) and less calls to ```epoll_ctl```.
+  For an echo server this kinda works, but we risk dropping repsonses on ```EAGAIN```/```EWOULDBLOCK```, partial scoket writes or other errors
+  i.e. not really something that can be done in a real application. **TLDR:** With ```INLINE_EPOLL_WRITE``` we try to
   write/echo what we just read, and ignore any errors.
-* Allocates 1 "context" per connection to keep track of FDs and RX buffers (the allocation can be removed when
-  defining ```INLINE_EPOLL_WRITE``` but since in that mode we only have 1 allocation on accepts/new connections the
-  benchmarks does not really change...)
+* Allocates 1 "context" per connection to keep track of FDs and RX buffers (the allocation can technically be removed when
+  defining ```INLINE_EPOLL_WRITE``` but since in that mode we only have 1 allocation on every accept/new connection the
+  benchmark results does not really change...)
 
 # io_uring vs epoll benchmark results
 
@@ -53,17 +52,19 @@ Built with the build command below. Servers are started like this:
 
 ``` taskset -c 0 ./epoll_echo_server```
 
+Server commit used for the benchmarks: ```3dfd157f6dbfa84faf5bb718cbce44d08185d295``` (for config values)
+
 ## Results
 
 The numbers in the table are requests/sec calculated by rust_echo_bench. All benchmarks are run with a 1024 byte
-payload. As mentioned above, the benchmarks uses a single event loop/cpu-core on the server side.
+payload. And as mentioned above, the benchmarks uses a single event-loop/cpu-core on the server side.
 
 |  Server  | Num connections:  |    1    |   256   |   512   |  1024   |
 |:--------:|:-----------------:|:-------:|:-------:|:-------:|:-------:|
 | io_uring | 1024 byte payload | 176 402 | 421 246 | 354 244 | 353 988 |
 |  epoll   | 1024 byte payload | 169 021 | 421 010 | 405 133 |   :(    |
 
-**NOTE:** For 1024 connections using epoll the server gets stuck @ 100% cpu usage, have not looked into why yet...
+**NOTE:** With 1024 connections the epoll server gets stuck @ 100% cpu usage, have not looked into why yet...
 
 **TODO:** Run benchmarks in a more realistic set-up.
 
