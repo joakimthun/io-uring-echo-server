@@ -55,6 +55,16 @@ Built with the build command below. Servers are started like this:
 
 ## Results
 
+The numbers in the table are requests/sec calculated by rust_echo_bench. All benchmarks are run with a 1024 byte
+payload. As mentioned above, the benchmarks uses a single event loop/cpu-core on the server side.
+
+|  Server  | Num connections:  |    1    |   256   |   512   |  1024   |
+|:--------:|:-----------------:|:-------:|:-------:|:-------:|:-------:|
+| io_uring | 1024 byte payload | 176 402 | 421 246 | 354 244 | 353 988 |
+|  epoll   | 1024 byte payload | 169 021 | 421 010 | 405 133 |   :(    |
+
+**NOTE:** For 1024 connections using epoll the server gets stuck @ 100% cpu usage, have not looked into why yet...
+
 **TODO:** Run benchmarks in a more realistic set-up.
 
 # Build
