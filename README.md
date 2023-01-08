@@ -7,6 +7,14 @@ Very simple TCP echo servers based on io_uring and epoll.
 Only tested on Ubuntu with kernel version 6.0.9-060009-generic.
 Built and tested with clang 14 and g++ 11.3.0.
 
+# io_uring echo server
+
+* ```src/net/UringEchoServer.h```
+* Uses multishot variants of accept (io_uring_prep_multishot_accept) and recv (io_uring_prep_recv_multishot)
+* IO buffers are pre-allocated and registered using io_uring_register_buf_ring/io_uring_buf_ring_init and recycled once the buffer content has been written. I.e. no more buffer allocations happens after the init.
+* TODO: ```Test IORING_SETUP_IOPOLL``` - https://man7.org/linux/man-pages/man2/io_uring_setup.2.html
+ 
+
 # Build and run
 
 ## Build
